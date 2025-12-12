@@ -21,6 +21,8 @@ const fundos = {
 
 let pontuacao = 0;
 let erros = 3;
+let faseAtual = null;
+let selecionado = null;   // lixo sendo arrastado
 
 /* ---------------- LIXOS DAS FASES ---------------- */
 
@@ -62,8 +64,10 @@ function iniciarFase(nome) {
     document.getElementById("fase").style.backgroundImage = `url('${fundos[nome]}')`;
     carregarLixos(nome);
 
-    document.getElementById("parabens").style.display = "none";
-    document.getElementById("gameover").style.display = "none";
+    const parabens = document.getElementById("parabens");
+    const gameover = document.getElementById("gameover");
+    if (parabens) parabens.style.display = "none";
+    if (gameover) gameover.style.display = "none";
 
     mostrar("fase");
 }
@@ -78,33 +82,73 @@ function carregarLixos(fase) {
         const img = document.createElement("img");
         img.src = lixo.img;
         img.className = "lixo";
-        img.style.left = (80 + i * 150) + "px";
-        img.style.top = "150px";
+        img.style.left = (50 + i * 110) + "px";
+        img.style.top = "140px";
         img.dataset.tipo = lixo.tipo;
 
-        img.onmousedown = arrastar;
+        // mouse
+        img.addEventListener("mousedown", iniciarArrasto);
+        // touch (dedo)
+        img.addEventListener("touchstart", iniciarArrasto);
+
         area.appendChild(img);
     });
 }
 
-/* ---------------- ARRASTAR ---------------- */
+/* ---------------- ARRASTAR (MOUSE + TOUCH) ---------------- */
 
-let selecionado = null;
+function iniciarArrasto(ev) {
+    selecionado = ev.target;
 
-function arrastar(e) {
-    selecionado = e.target;
-
-    document.onmousemove = ev => {
-        selecionado.style.left = (ev.pageX - 40) + "px";
-        selecionado.style.top = (ev.pageY - 40) + "px";
-    };
-
-    document.onmouseup = verificarSolto;
+    if (ev.type === "touchstart") {
+        ev.preventDefault(); // evita scroll enquanto arrasta
+    }
 }
+
+function mover(ev) {
+    if (!selecionado) return;
+
+    let x, y;
+
+    if (ev.type === "mousemove") {
+        x = ev.pageX;
+        y = ev.pageY;
+    } else if (ev.type === "touchmove") {
+        x = ev.touches[0].pageX;
+        y = ev.touches[0].pageY;
+        ev.preventDefault();
+    }
+
+    selecionado.style.left = (x - 40) + "px";
+    selecionado.style.top = (y - 40) + "px";
+}
+
+function finalizarArrasto(ev) {
+    if (!selecionado) return;
+    verificarSolto(ev);
+    selecionado = null;
+}
+
+/* eventos globais para acompanhar o arrasto */
+document.addEventListener("mousemove", mover);
+document.addEventListener("mouseup", finalizarArrasto);
+
+document.addEventListener("touchmove", mover);
+document.addEventListener("touchend", finalizarArrasto);
 
 /* ---------------- VERIFICAR LIXEIRA ---------------- */
 
 function verificarSolto(ev) {
+    let x, y;
+
+    if (ev.type.includes("mouse")) {
+        x = ev.clientX;
+        y = ev.clientY;
+    } else if (ev.type.includes("touch")) {
+        x = ev.changedTouches[0].clientX;
+        y = ev.changedTouches[0].clientY;
+    }
+
     const tipo = selecionado.dataset.tipo;
     const lixeiras = document.querySelectorAll(".lixeira");
 
@@ -113,16 +157,14 @@ function verificarSolto(ev) {
     lixeiras.forEach(l => {
         const r = l.getBoundingClientRect();
         const dentro =
-            ev.clientX > r.left &&
-            ev.clientX < r.right &&
-            ev.clientY > r.top &&
-            ev.clientY < r.bottom;
+            x > r.left &&
+            x < r.right &&
+            y > r.top &&
+            y < r.bottom;
 
-        if (dentro) {
-            if (l.dataset.tipo === tipo) {
-                acertou = true;
-                selecionado.remove();
-            }
+        if (dentro && l.dataset.tipo === tipo) {
+            acertou = true;
+            selecionado.remove();
         }
     });
 
@@ -132,10 +174,6 @@ function verificarSolto(ev) {
     } else {
         pontuar(false);
     }
-
-    document.onmousemove = null;
-    document.onmouseup = null;
-    selecionado = null;
 }
 
 /* ---------------- PONTUAÇÃO ---------------- */
@@ -148,7 +186,8 @@ function pontuar(acertou) {
         document.getElementById("erros").innerText = "Erros restantes: " + erros;
 
         if (erros <= 0) {
-            document.getElementById("gameover").style.display = "flex";
+            const gameover = document.getElementById("gameover");
+            if (gameover) gameover.style.display = "flex";
         }
     }
 
@@ -161,14 +200,15 @@ function verificarConclusao() {
     const lixoRestante = document.querySelectorAll(".lixo").length;
 
     if (lixoRestante === 0) {
-        document.getElementById("parabens").style.display = "flex";
+        const parabens = document.getElementById("parabens");
+        if (parabens) parabens.style.display = "flex";
     }
 }
 
 /* ---------------- REINICIAR ---------------- */
 
 function reiniciarFase() {
-    iniciarFase(faseAtual);
+    if (faseAtual) iniciarFase(faseAtual);
 }
 
 function voltarMapa() {
