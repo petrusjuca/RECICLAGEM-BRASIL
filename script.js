@@ -22,9 +22,9 @@ const fundos = {
 let pontuacao = 0;
 let erros = 3;
 let faseAtual = null;
-let selecionado = null;   // lixo sendo arrastado
+let selecionado = null;
 
-/* ---------------- LIXOS DAS FASES ---------------- */
+/* ---------------- LIXOS ---------------- */
 
 const lixosPorFase = {
     belem: [
@@ -58,17 +58,16 @@ function iniciarFase(nome) {
     faseAtual = nome;
     erros = 3;
     pontuacao = 0;
+
     document.getElementById("pontuacao").innerText = "Pontos: 0";
     document.getElementById("erros").innerText = "Erros restantes: 3";
 
     document.getElementById("fase").style.backgroundImage = `url('${fundos[nome]}')`;
+
+    document.getElementById("parabens").style.display = "none";
+    document.getElementById("gameover").style.display = "none";
+
     carregarLixos(nome);
-
-    const parabens = document.getElementById("parabens");
-    const gameover = document.getElementById("gameover");
-    if (parabens) parabens.style.display = "none";
-    if (gameover) gameover.style.display = "none";
-
     mostrar("fase");
 }
 
@@ -82,26 +81,29 @@ function carregarLixos(fase) {
         const img = document.createElement("img");
         img.src = lixo.img;
         img.className = "lixo";
-        img.style.left = (50 + i * 110) + "px";
-        img.style.top = "140px";
+        img.style.position = "absolute";
+        img.style.left = (60 + i * 110) + "px";
+        img.style.top = "160px";
         img.dataset.tipo = lixo.tipo;
 
-        // mouse
+        // Mouse
         img.addEventListener("mousedown", iniciarArrasto);
-        // touch (dedo)
-        img.addEventListener("touchstart", iniciarArrasto);
+
+        // TOUCH (O MAIS IMPORTANTE)
+        img.addEventListener("touchstart", iniciarArrasto, { passive: false });
 
         area.appendChild(img);
     });
 }
 
-/* ---------------- ARRASTAR (MOUSE + TOUCH) ---------------- */
+/* ---------------- ARRASTAR (TOUCH + MOUSE) ---------------- */
 
 function iniciarArrasto(ev) {
     selecionado = ev.target;
 
+    // bloqueia scroll
     if (ev.type === "touchstart") {
-        ev.preventDefault(); // evita scroll enquanto arrasta
+        ev.preventDefault();
     }
 }
 
@@ -114,8 +116,8 @@ function mover(ev) {
         x = ev.pageX;
         y = ev.pageY;
     } else if (ev.type === "touchmove") {
-        x = ev.touches[0].pageX;
-        y = ev.touches[0].pageY;
+        x = ev.touches[0].clientX;
+        y = ev.touches[0].clientY;
         ev.preventDefault();
     }
 
@@ -125,18 +127,19 @@ function mover(ev) {
 
 function finalizarArrasto(ev) {
     if (!selecionado) return;
+
     verificarSolto(ev);
     selecionado = null;
 }
 
-/* eventos globais para acompanhar o arrasto */
+/* EVENTOS GLOBAIS */
 document.addEventListener("mousemove", mover);
 document.addEventListener("mouseup", finalizarArrasto);
 
-document.addEventListener("touchmove", mover);
+document.addEventListener("touchmove", mover, { passive: false });
 document.addEventListener("touchend", finalizarArrasto);
 
-/* ---------------- VERIFICAR LIXEIRA ---------------- */
+/* ---------------- VERIFICA SE JOGOU NA LIXEIRA CERTA ---------------- */
 
 function verificarSolto(ev) {
     let x, y;
@@ -144,27 +147,25 @@ function verificarSolto(ev) {
     if (ev.type.includes("mouse")) {
         x = ev.clientX;
         y = ev.clientY;
-    } else if (ev.type.includes("touch")) {
+    } else {
         x = ev.changedTouches[0].clientX;
         y = ev.changedTouches[0].clientY;
     }
 
     const tipo = selecionado.dataset.tipo;
+
     const lixeiras = document.querySelectorAll(".lixeira");
 
     let acertou = false;
 
     lixeiras.forEach(l => {
         const r = l.getBoundingClientRect();
-        const dentro =
-            x > r.left &&
-            x < r.right &&
-            y > r.top &&
-            y < r.bottom;
 
-        if (dentro && l.dataset.tipo === tipo) {
-            acertou = true;
-            selecionado.remove();
+        if (x > r.left && x < r.right && y > r.top && y < r.bottom) {
+            if (l.dataset.tipo === tipo) {
+                acertou = true;
+                selecionado.remove();
+            }
         }
     });
 
@@ -186,29 +187,25 @@ function pontuar(acertou) {
         document.getElementById("erros").innerText = "Erros restantes: " + erros;
 
         if (erros <= 0) {
-            const gameover = document.getElementById("gameover");
-            if (gameover) gameover.style.display = "flex";
+            document.getElementById("gameover").style.display = "flex";
         }
     }
 
     document.getElementById("pontuacao").innerText = "Pontos: " + pontuacao;
 }
 
-/* ---------------- CONCLUSÃO ---------------- */
+/* ---------------- ACABOU A FASE? ---------------- */
 
 function verificarConclusao() {
-    const lixoRestante = document.querySelectorAll(".lixo").length;
-
-    if (lixoRestante === 0) {
-        const parabens = document.getElementById("parabens");
-        if (parabens) parabens.style.display = "flex";
+    if (document.querySelectorAll(".lixo").length === 0) {
+        document.getElementById("parabens").style.display = "flex";
     }
 }
 
 /* ---------------- REINICIAR ---------------- */
 
 function reiniciarFase() {
-    if (faseAtual) iniciarFase(faseAtual);
+    iniciarFase(faseAtual);
 }
 
 function voltarMapa() {
