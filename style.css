@@ -1,0 +1,164 @@
+/* ---------- RESET ---------- */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    user-select: none;
+    background: #dff5ff;
+}
+
+.screen {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* ---------- LOADING ---------- */
+#loading {
+    background: white;
+}
+
+#loading h1 {
+    color: #2a8f4f;
+}
+
+/* ---------- MENU ---------- */
+#menu, #mapa {
+    background:
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url("imagens/mapa_brasil_desenho.png");
+    background-size: cover;
+}
+
+/* Cartão central */
+.menu-card {
+    background: rgba(255, 255, 255, 0.92);
+    padding: 30px 40px;
+    border-radius: 16px;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 18px rgba(0,0,0,0.4);
+}
+
+.titulo-jogo {
+    font-size: 42px;
+    margin: 0;
+    color: #2b9348;
+    text-shadow: 1px 1px 4px #00000045;
+}
+
+.subtitulo {
+    font-size: 18px;
+    color: #333;
+    margin-top: 8px;
+}
+
+/* Botão */
+.btn {
+    margin-top: 20px;
+    padding: 12px 26px;
+    background: #2b9348;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    transform: scale(1.06);
+    background: #46b768;
+}
+
+.btn-sec {
+    background: #555;
+}
+
+.btn-sec:hover {
+    background: #777;
+}
+
+.map-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- JOGO ---------- */
+
+#fase {
+    background-size: cover;
+    background-position: center;
+}
+
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0,0,0,0.45);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+#lixeiras {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.lixeira {
+    width: 130px;
+    margin: 0 10px;
+}
+
+.lixo {
+    width: 90px;
+    position: absolute;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.lixo:hover {
+    transform: scale(1.15);
+}
+
+/* ---------- OVERLAYS ---------- */
+
+.overlay {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    background: rgba(0,0,0,0.65);
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-card {
+    background: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 16px;
+    width: 320px;
+}
+
+.overlay-card h2 {
+    font-size: 32px;
+    color: #2b9348;
+}
+
+.overlay-card p {
+    font-size: 18px;
+    color: #222;
+}
+

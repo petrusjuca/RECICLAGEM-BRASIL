@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo da Reciclagem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="screen" style="display:flex;">
+    <h1>Carregando...</h1>
+</div>
+
+<!-- MENU BONITO -->
+<div id="menu" class="screen">
+    <div class="menu-card">
+        <h1 class="titulo-jogo">JOGO DA RECICLAGEM</h1>
+        <p class="subtitulo">Escolha uma cidade do Brasil e recicle o lixo corretamente!</p>
+        <button class="btn" onclick="abrirMapa()">Jogar</button>
+    </div>
+</div>
+
+<!-- MAPA -->
+<div id="mapa" class="screen">
+    <div class="menu-card">
+        <h2 class="titulo-mapa">Escolha a Cidade</h2>
+        <div class="map-buttons">
+            <button class="btn" onclick="iniciarFase('belem')">Belém</button>
+            <button class="btn" onclick="iniciarFase('fortaleza')">Fortaleza</button>
+            <button class="btn" onclick="iniciarFase('rio')">Rio de Janeiro</button>
+        </div>
+        <button class="btn btn-sec" onclick="mostrar('menu')">Voltar</button>
+    </div>
+</div>
+
+<!-- FASE DO JOGO -->
+<div id="fase" class="screen">
+    
+    <div id="hud">
+        <div id="pontuacao">Pontos: 0</div>
+        <div id="erros">Erros restantes: 3</div>
+    </div>
+
+    <div id="lixos"></div>
+
+    <div id="lixeiras">
+        <img src="imagens/lixeira_verde.png" class="lixeira" data-tipo="vidro">
+        <img src="imagens/lixeira_marrom.png" class="lixeira" data-tipo="organico">
+        <img src="imagens/lixeira_vermelha.png" class="lixeira" data-tipo="plastico">
+        <img src="imagens/lixeira_azul.png" class="lixeira" data-tipo="papel">
+        <img src="imagens/lixeira_amarela.png" class="lixeira" data-tipo="metal">
+    </div>
+
+    <!-- PARABÉNS -->
+    <div id="parabens" class="overlay">
+        <div class="overlay-card">
+            <h2>Parabéns!</h2>
+            <p>Você completou a fase com sucesso!</p>
+            <button class="btn" onclick="voltarMapa()">Voltar ao mapa</button>
+            <button class="btn btn-sec" onclick="reiniciarFase()">Reiniciar fase</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameover" class="overlay">
+        <div class="overlay-card">
+            <h2>Ops!</h2>
+            <p>Você cometeu muitos erros.</p>
+            <button class="btn" onclick="reiniciarFase()">Tentar de novo</button>
+            <button class="btn btn-sec" onclick="voltarMapa()">Voltar ao mapa</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
